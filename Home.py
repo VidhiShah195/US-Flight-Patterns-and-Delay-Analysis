@@ -54,13 +54,24 @@ flights_data['Day_Month_Year'] = flights_data['FL_DATE'].dt.strftime('%d-%b-%Y')
 # grouping by day and count the number of flights.
 daily_flights = flights_data.groupby('FL_DATE')['FL_NUMBER'].count().reset_index(name='TotalFlights')
 
-# plotting and adding tooltip.
-fig1 = px.line(daily_flights, x='FL_DATE', y='TotalFlights', markers=True, 
-              labels={'FL_DATE': 'Date', 'TotalFlights': 'Total Flights'},
-              title='Total Number of Flights by Day',
-              hover_name='FL_DATE', hover_data={'FL_DATE': False, 'TotalFlights': True})
+# Resampling data to get monthly total flights
+monthly_flights = flights_data.resample('M', on='FL_DATE')['FL_NUMBER'].count().reset_index(name='TotalFlights')
+
+# Plotting and adding tooltip
+fig1 = px.line(monthly_flights, x='FL_DATE', y='TotalFlights', markers=True, 
+               labels={'FL_DATE': 'Date', 'TotalFlights': 'Total Flights'},
+               title='Total Number of Flights by Month',
+               hover_name='FL_DATE', hover_data={'FL_DATE': False, 'TotalFlights': True})
 fig1.update_traces(hovertemplate='<b>Date:</b> %{x}<br><b>Total Flights:</b> %{y:,.0f}', line_color='#048092')
 st.plotly_chart(fig1)
+
+# # plotting and adding tooltip.
+# fig1 = px.line(daily_flights, x='FL_DATE', y='TotalFlights', markers=True, 
+#               labels={'FL_DATE': 'Date', 'TotalFlights': 'Total Flights'},
+#               title='Total Number of Flights by Day',
+#               hover_name='FL_DATE', hover_data={'FL_DATE': False, 'TotalFlights': True})
+# fig1.update_traces(hovertemplate='<b>Date:</b> %{x}<br><b>Total Flights:</b> %{y:,.0f}', line_color='#048092')
+# st.plotly_chart(fig1)
 
 
 
@@ -87,7 +98,11 @@ else:
 
 
 # DAY OF WEEK BAR CHART
-st.subheader("Weekly Overview")
+if selected_month == "All":
+    st.subheader("Weekly Overview")
+else:
+    st.subheader(f"Weekly Overview for {selected_month}")
+
 st.write("The bar chart below shows the total number of flights scheduled for each day of the week based on the selected month(s) of 2023.")
 
 # extracting day of the week information and then grouping the data by it and total flights.
@@ -105,7 +120,11 @@ st.plotly_chart(fig2)
 
 
 # TREE MAP WITH TOP 10 BUSIEST AIRPORTS 
-st.subheader(f"Top 10 Busiest Airport of {selected_month}")
+if selected_month == "All":
+    st.subheader("Top 10 Busiest Airports")
+else:
+    st.subheader(f"Top 10 Busiest Airports for {selected_month}")
+
 st.write("The tree map below shows the top 10 busiest airports based on the previously selected month(s) of 2023.")
 
 # creating a dataframe with the top 10 busiest airports and putting that into the treemap. 
@@ -122,7 +141,11 @@ st.plotly_chart(fig3)
 
 
 # TOP 10 AIRLINES
-st.subheader(f"Top 10 Airlines of {selected_month}")
+if selected_month == "All":
+    st.subheader("Top 10 Airlines")
+else:
+    st.subheader(f"Top 10 Airlines for {selected_month}")
+
 st.write("The bar chart below shows the top 10 airlines based on the number of flights for the the previously selected month(s) of 2023.")
 
 # getting the top 10 airlines for the selected month.
@@ -138,7 +161,11 @@ st.plotly_chart(fig4)
 
 
 # DONUT CHART
-st.subheader(f"Distribution of Flight Status for {selected_month}")
+if selected_month == "All":
+    st.subheader("Overall Distribution of Flight Status")
+else:
+    st.subheader(f"Distribution of Flight Status for {selected_month}")
+
 st.write("The donut chart below shows the distribution in percentage of the flights that were on time, delayed, cancelled, or diverted for the previously selected month(s) of 2023.")
 
 # counting delayed, diverted, and cancelled flights for the selected month.
@@ -164,7 +191,11 @@ st.plotly_chart(fig5)
 
 
 # BAR CHART FOR TOP 5 AIRPORTS DUE TO SELECTED DELAY TYPES
-st.subheader(f'Top 5 Airports by Delay Type for {selected_month}')
+if selected_month == "All":
+    st.subheader("Top 5 Airports by Delay Type")
+else:
+    st.subheader(f"Top 5 Airports by Delay Type for {selected_month}")
+
 st.write("The bar chart below shows the top 5 busiest airports based on your chosen delay type and previously selected month(s).")
 st.write("There are five types of delays: ")
 st.write("1. Carrier Delay ✈ Delay caused due to carrier, for example maintenance, crew problems, aircraft cleaning, fueling, etc.")
@@ -185,6 +216,7 @@ delayed_flights = flights_data[flights_data['ARR_DELAY'] > 0]
 if selected_month == 'All':
     delayed_flights_selected_month = delayed_flights
 else:
+    selected_month_index = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'].index(selected_month) + 1
     delayed_flights_selected_month = delayed_flights[delayed_flights['FL_DATE'].dt.month == selected_month_index]
 
 # creating a list of reasons for delay and then add a select box to choose from the list.
