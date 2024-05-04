@@ -28,8 +28,7 @@ st.markdown(
 # making a gray horizontal line under my title.
 st.markdown("<hr style='border: 1px solid #f0f0f0;'>", unsafe_allow_html=True)
 
-st.write("The goal of this Streamlit app is to help you navigate and understand the overall flight patterns, including those related to cancellations and delays from January to August of 2023.")
-
+st.write("The goal of this Streamlit app is to help you navigate and understand the overall flight patterns, including those related to cancellations and delays from January to August of 2023. There are two additional pages which can be accessed through the side bar on the left.")
 
 
 # added cache to ensure that the data doesn't have to be reloaded everytime the file runs.

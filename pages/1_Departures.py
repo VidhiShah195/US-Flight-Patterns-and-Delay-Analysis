@@ -27,7 +27,7 @@ st.markdown(
 # making a gray horizontal line under my title for a visual division.
 st.markdown("<hr style='border: 1px solid #f0f0f0;'>", unsafe_allow_html=True)
 
-
+st.write("On this page, we provide insights into departure patterns and flight performance at various airports. Explore the busiest departure times, track flight status distributions, and delve into the average delay times caused by different factors.")
 
 # added cache to ensure that the data doesn't have to be reloaded everytime the file runs.
 @st.cache_data
