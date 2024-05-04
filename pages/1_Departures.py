@@ -3,9 +3,6 @@ import pandas as pd
 import plotly.express as px
 import base64
 import plotly.graph_objects as go
-import geopandas as gpd
-import folium
-from streamlit_folium import folium_static
 
 st.set_page_config(
     page_title="Departure Analysis",
@@ -40,10 +37,10 @@ st.markdown("<hr style='border: 1px solid #f0f0f0;'>", unsafe_allow_html=True)
 
 
 # Display select boxes
-selected_airport_dep = st.selectbox('Select Departure Airport', flights_data['ORIGIN'].unique())
+selected_airport_dep = st.selectbox('Select Departure Airport', sorted(flights_data['ORIGIN'].unique()))
 # Filter airlines based on selected airport
 filtered_airlines = flights_data[flights_data['ORIGIN'] == selected_airport_dep]['AIRLINE'].unique()
-selected_airline_dep = st.selectbox('Select Airline', filtered_airlines)
+selected_airline_dep = st.selectbox('Select Airline', sorted(filtered_airlines))
 
 
 
@@ -91,6 +88,9 @@ scatter_data = filtered_data_dep[['FL_DATE', 'DEP_DELAY']]
 # Converting FL_DATE to datetime format
 scatter_data['FL_DATE'] = pd.to_datetime(scatter_data['FL_DATE'])
 
+# Filtering out negative departure delays
+scatter_data = scatter_data[scatter_data['DEP_DELAY'] >= 0]
+
 # Grouping by FL_DATE and calculating the average departure delay for each date
 scatter_data = scatter_data.groupby('FL_DATE')['DEP_DELAY'].mean().reset_index()
 
@@ -105,7 +105,9 @@ st.plotly_chart(fig2)
 
 
 
+
 # AVERAGE DELAY FOR THE AIRPORT/AIRLINES
+st.subheader('Overall Average Arrival Delay')
 # Filtering data to include only positive delay values.
 scatter_data_positive_delay = scatter_data[scatter_data['DEP_DELAY'] > 0]
 # Calculating the average departure delay for the filtered data
@@ -131,9 +133,6 @@ flight_status_counts = {
     "Diverted": filtered_data_dep['DIVERTED'].sum()
 }
 
-# counting delay types.
-delay_counts = filtered_data_dep[['Carrier Delay', 'Weather Delay', 'NAS Delay', 'Security Delay', 'Late Aircraft Delay']].sum()
-
 # making the bigger pie chart with flight overall status.
 fig3 = go.Figure()
 
@@ -147,15 +146,17 @@ fig3.add_trace(go.Pie(
     showlegend=False,
     hovertemplate='<b>Flight Status:</b> %{label}<br>' + '<b>Value:</b> %{value}<br>' + '<b>Percent of Total:</b> %{percent}'))
 
-# making a smaller pie chart for the delay types.
+# counting delay types where delay is greater than 0
+delay_counts = (filtered_data_dep[['Carrier Delay', 'Weather Delay', 'NAS Delay', 'Security Delay', 'Late Aircraft Delay']] > 0).any(axis=1).sum()
+
+# Making the smaller pie chart with count of delay types
 fig3.add_trace(go.Pie(
     labels=delay_counts.index,
     values=delay_counts.values,
     hole=0.5,
     domain={"x": [0.70, 1]},
     legendgroup="Delay Types",
-    hovertemplate='<b>Cause of Delay:</b> %{label}<br>' + '<b>Value:</b> %{value}<br>' + '<b>Percent of Total:</b> %{percent}'))
-
+    hovertemplate='<b>Cause of Delay:</b> %{label}<br>' + '<b>Count:</b> %{value}<br>' + '<b>Percent of Total:</b> %{percent}'))
 fig3.update_layout(
     title_text="Flight Status and Delay Types Distribution", 
     annotations=[{"text": "Flight Status", "x": 0.19, "y": 0.5, "showarrow": False}, {"text": "Delay Types", "x": 0.91, "y": 0.5, "showarrow": False}],
