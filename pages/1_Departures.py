@@ -116,7 +116,7 @@ else:
 
     st.subheader("Average Dalay caused by Each Delay Type")
     st.write(f"The donut chart below shows the the percent of flights departing from {selected_airport_dep} airport on {selected_airline_dep} that experienced delays due to specific delay types. Hover over the chart to view the average delay time (in minutes) caused by each delay type.")
-    st.markdown("<b>Note:</b> A flight can be delayed due to more than one reason and in a few cases, the reason for delay was not reported so some discrepencies are viable.", unsafe_allow_html=True)
+    st.markdown("<b>Note:</b> A flight can be delayed due to more than one reason and in a few cases, the reason for delay was not reported so some discrepencies may occur.", unsafe_allow_html=True)
     
 
     fig4 = go.Figure()
