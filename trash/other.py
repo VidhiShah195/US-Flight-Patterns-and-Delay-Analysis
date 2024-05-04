@@ -356,10 +356,11 @@
 
 
 
-# BEST MAP THAT WORKS BUT DOESN't LOAD DUE TO THE LARGE DATASET
-# MAP BY SELECTED DESTINATION AND AIRLINES
-# st.header('Map of Flights Landing in Chosen Airport based on the Airlines')
-# st.write("The map below displays the flights landing in your chosen airport destination based on the airlines.")
+# ARRIVALS MAP
+# st.header(f'Map of {selected_airline_arr} Flights Landing in {selected_airport_arr} airport')
+# st.write(f"The map below displays the origin of flights landing in {selected_airport_arr} on {selected_airline_arr}")
+# st.markdown("<b>Note:</b> This map shows the total number of flights, not each individual flight, that landed with the chosen airline and originated in the city where the marker has been placed. For more infromation, click on the marker", unsafe_allow_html=True)
+
 # # added cache for my shape file to ensure that the data doesn't have to be reloaded everytime the file runs.
 # @st.cache_data
 # def load_shp_file(shp):
@@ -373,20 +374,14 @@
 # # mergeing datasets based on ORIGIN and FAA_ID.
 # merged_data = pd.merge(flights_data, gdf, left_on='ORIGIN', right_on='FAA_ID', how='inner')
 
-# # creating two select boxes for my uses to pick the destination airport and airline.
-# dest_airport = st.selectbox("Select Destination Airport:", merged_data['DEST'].unique())
-# airline = st.selectbox("Select Airline:", merged_data['AIRLINE'].unique())
-
 # # filtering data based on user's selections.
-# filtered_data = merged_data[(merged_data['DEST'] == dest_airport) & (merged_data['AIRLINE'] == airline)]
+# filtered_data = merged_data[(merged_data['DEST'] == selected_airport_arr) & (merged_data['AIRLINE'] == selected_airline_arr)]
 
 # # getting latitude and longitude for the destination airport.
-# selected_dest_row = merged_data[merged_data['DEST'] == dest_airport].iloc[-1]
-# dest_lat = selected_dest_row['geometry'].y
-# dest_lon = selected_dest_row['geometry'].x
+# selected_dest_row = merged_data[merged_data['DEST'] == selected_airport_arr].iloc[-1]
 
-# # creating a folium map centered at the destination airport.
-# m = folium.Map(location=[dest_lat, dest_lon], zoom_start=4)
+# # creating a folium map centered at the center of US.
+# m = folium.Map(location=[39.833333, -98.583333], zoom_start=4)
 
 # # iterating over each row in the filtered_data DataFrame and adding a marker with airoplane on it at the airports with tooltips
 # for idx, row in filtered_data.iterrows():
@@ -397,7 +392,46 @@
 #                   icon=folium.Icon(icon='plane', prefix='fa'),
 #                   popup=f"<b>Route: </b> <br>{row['ORIGIN_CITY']}   ✈   {row['DEST_CITY']}<br>"
 #                           f"<br><b>Carrier: </b> {row['AIRLINE']}<br>"
-#                           f"<br> <b>Number of Flights:</b> {row['FL_NUMBER']}<br>"
-#                           f"<br><b>Avg. Arrival Delay: </b>{row['ARR_DELAY']}<br>").add_to(m)
+#                           f"<br> <b>Number of Flights:</b> {row['FL_NUMBER']}<br>").add_to(m)
+
+# folium_static(m)
+
+
+# # DEPARTURE MAP
+# st.header(f'Map of {selected_airline_dep} Flights Departing From {selected_airport_dep} airport')
+# st.write(f"The map below displays the destination of flights departing from {selected_airport_dep} on {selected_airline_dep}")
+# st.markdown("<b>Note:</b> This map shows the total number of flights, not each individual flight, that departed from the chosen airline and landed in the city where the marker has been placed. For more infromation, click on the marker", unsafe_allow_html=True)
+# # added cache for my shape file to ensure that the data doesn't have to be reloaded everytime the file runs.
+# @st.cache_data
+# def load_shp_file(shp):
+#     return gpd.read_file(shp)
+
+# # using the above defined function to read my shape file.
+# gdf = load_shp_file("geo_data/USA_Airports.shp")
+
+# # st.write(gdf)
+
+# # mergeing datasets based on ORIGIN and FAA_ID.
+# merged_data = pd.merge(flights_data, gdf, left_on='DEST', right_on='FAA_ID', how='inner')
+
+# # filtering data based on user's selections.
+# filtered_data = merged_data[(merged_data['ORIGIN'] == selected_airport_dep) & (merged_data['AIRLINE'] == selected_airline_dep)]
+
+# # getting latitude and longitude for the destination airport.
+# selected_dest_row = merged_data[merged_data['ORIGIN'] == selected_airport_dep].iloc[-1]
+
+# # creating a folium map centered at the center of US.
+# m = folium.Map(location=[39.833333, -98.583333], zoom_start=4)
+
+# # iterating over each row in the filtered_data DataFrame and adding a marker with airoplane on it at the airports with tooltips
+# for idx, row in filtered_data.iterrows():
+#     dest_lat = row['geometry'].y
+#     dest_lon = row['geometry'].x
+#     dest_airport = row['DEST']
+#     folium.Marker(location=[dest_lat, dest_lon],
+#                   icon=folium.Icon(icon='plane', prefix='fa'),
+#                   popup=f"<b>Route: </b> <br>{row['ORIGIN_CITY']}   ✈   {row['DEST_CITY']}<br>"
+#                           f"<br><b>Carrier: </b> {row['AIRLINE']}<br>"
+#                           f"<br> <b>Number of Flights:</b> {row['FL_NUMBER']}<br>").add_to(m)
 
 # folium_static(m)
