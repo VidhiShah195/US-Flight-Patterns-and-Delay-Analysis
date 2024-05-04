@@ -10,7 +10,7 @@ st.set_page_config(
     )
 
 # reading the gif file as binary data and then encoding it as a base64, and storing the result as a string.
-with open("Flight_delay.csv/landing.gif", "rb") as f:
+with open("data/landing.gif", "rb") as f:
     gif_data = f.read()
 gif = base64.b64encode(gif_data).decode()
 
@@ -34,7 +34,7 @@ def load_data(csv):
     return pd.read_csv(csv)
 
 # reading the csv as a pandas daatframe.
-flights_data = load_data("Flight_delay.csv/flights_sample_3m.csv")
+flights_data = load_data("data/flights_sample_3m.csv")
 
 
 # CREATING THE SELECT BOXES ONE FOR AIRPORT AND THEN ANOTHER WHICH FILTERS BASED ON THAT 
