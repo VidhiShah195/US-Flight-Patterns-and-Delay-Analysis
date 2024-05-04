@@ -38,10 +38,11 @@ st.markdown(
 st.markdown("<hr style='border: 1px solid #f0f0f0;'>", unsafe_allow_html=True)
 
 
+
 # Display select boxes
-selected_airport_arr = st.selectbox('Select Arrival Airport', sorted(flights_data['ORIGIN'].unique()))
+selected_airport_arr = st.selectbox('Select Arrival Airport', sorted(flights_data['DEST'].unique()))
 # Filter airlines based on selected airport
-filtered_airlines = flights_data[flights_data['ORIGIN'] == selected_airport_arr]['AIRLINE'].unique()
+filtered_airlines = flights_data[flights_data['DEST'] == selected_airport_arr]['AIRLINE'].unique()
 selected_airline_arr = st.selectbox('Select Airline', sorted(filtered_airlines))
 
 
@@ -76,87 +77,67 @@ fig1 = px.bar(x=hours, y=[arrival_counts_all_hours[hour] for hour in range(24)],
 fig1.update_xaxes(tickmode='array')
 
 # Adding a tooltip
-fig1.update_traces(hovertemplate='<b>Arrival Hour:</b> %{x}<br><b>Number of Flights:</b> %{y}<extra></extra>', marker_color='#73C6A2')
+fig1.update_traces(hovertemplate='<b>Arrival Hour:</b> %{x}<br><b>Number of Flights:</b> %{y}<extra></extra>', marker_color='#048092')
 st.plotly_chart(fig1)
 
 
 
 
-st.subheader(f'Arrival Delays For {selected_airport_arr} with {selected_airline_arr} Over Time')
+st.subheader("Flight Status Distribution")
 
-# Extracting relevant columns
-scatter_data = filtered_data_arr[['FL_DATE', 'ARR_DELAY']]
-
-# Converting FL_DATE to datetime format
-scatter_data['FL_DATE'] = pd.to_datetime(scatter_data['FL_DATE'])
-
-# Filtering out negative arrival delays
-scatter_data = scatter_data[scatter_data['ARR_DELAY'] >= 0]
-
-# Grouping by FL_DATE and calculating the average arrival delay for each date
-scatter_data = scatter_data.groupby('FL_DATE')['ARR_DELAY'].mean().reset_index()
-
-# Making the scatter plot
-fig2 = px.scatter(scatter_data, x='FL_DATE', y='ARR_DELAY', title='Average Arrival Delay Over Time',
-                  labels={'FL_DATE': 'Date', 'ARR_DELAY': 'Average Arrival Delay (mins)'})
-fig2.update_traces(hovertemplate='<b>Date:</b> %{x}<br><b>Average Arrival Delay:</b> %{y} mins<extra></extra>', marker_color='#73C6A2')
-fig2.update(layout_coloraxis_showscale=False)
-st.plotly_chart(fig2)
-
-
-
-# AVERAGE DELAY FOR THE AIRPORT/AIRLINES
-st.subheader('Overall Average Arrival Delay')
-# Filtering data to include only positive delay values.
-scatter_data_positive_delay = scatter_data[scatter_data['ARR_DELAY'] > 0]
-# Calculating the average arrival delay for the filtered data
-average_arr_delay = scatter_data_positive_delay['ARR_DELAY'].mean()
-# Rounding the average delay
-rounded_average = round(average_arr_delay)
-st.write(f"The average arrival delay for flights landing in {selected_airport_arr} airport with {selected_airline_arr} is approximately {rounded_average} minutes.")
-
-
-
-#renaming my columns so that I can use it later to make sure its easy for my users.
+# renaming my columns so that I can use it later to make sure its easy for my users 
 filtered_data_arr.rename(columns={'DELAY_DUE_CARRIER': 'Carrier Delay','DELAY_DUE_WEATHER': 'Weather Delay',
-                            'DELAY_DUE_NAS': 'NAS Delay','DELAY_DUE_SECURITY': 'Security Delay',
-                            'DELAY_DUE_LATE_AIRCRAFT': 'Late Aircraft Delay'}, inplace=True)
+                              'DELAY_DUE_NAS': 'NAS Delay','DELAY_DUE_SECURITY': 'Security Delay',
+                              'DELAY_DUE_LATE_AIRCRAFT': 'Late Aircraft Delay'}, inplace=True)
 
-st.subheader("Flight Status and Delay Types Distribution for Arrivals")
-
-# calculating flight count for cancelled, delayed, and diverted flights.
-flight_status_counts_arrival = {
+# calculating flight count for cancelled, delayed and or diverted flights.
+flight_status_counts = {
     "Cancelled": filtered_data_arr['CANCELLED'].sum(),
     "Delayed": filtered_data_arr[filtered_data_arr['ARR_DELAY'] > 0].shape[0],
-    "Diverted": filtered_data_arr['DIVERTED'].sum()
+    "On time": filtered_data_arr[(filtered_data_arr['CANCELLED'] == 0) & (filtered_data_arr['ARR_DELAY'] <= 0)].shape[0]
 }
 
-fig3 = go.Figure()
-# making the bigger pie chart with flight overall status.
-fig3.add_trace(go.Pie(
-    labels=list(flight_status_counts_arrival.keys()),
-    values=list(flight_status_counts_arrival.values()),
-    textinfo='label+percent', 
-    hole=0.5,
-    domain={"x": [0, 0.5]},
-    legendgroup="Flight Status",
-    showlegend=False,
-    hovertemplate='<b>Flight Status:</b> %{label}<br>' + '<b>Value:</b> %{value}<br>' + '<b>Percent of Total:</b> %{percent}'))
+if all(count == 0 for count in flight_status_counts.values()):
+    st.write("No flights were delayed, cancelled, or diverted.")
+else:
+    st.write(f"The donut chart below shows the the percent of flights landing at {selected_airport_arr} airport on {selected_airline_arr} that were on time, or experienced delays and/or cancellations.")
+    # making the bigger pie chart with flight overall status.
+    fig3 = go.Figure()
 
-#  counting delay types.
-delay_counts_arrival = filtered_data_arr[['Carrier Delay', 'Weather Delay', 'NAS Delay', 'Security Delay', 'Late Aircraft Delay']].apply(lambda x: (x > 0).sum())
+    fig3.add_trace(go.Pie(
+        labels=list(flight_status_counts.keys()),
+        values=list(flight_status_counts.values()),
+        textinfo='label+percent', 
+        hole=0.5,
+        hovertemplate='<b>Flight Status:</b> %{label}<br>' + '<b>Value:</b> %{value}<br>' + '<b>Percent of Total:</b> %{percent}'))
+    fig3.update_layout(
+        title_text="Flight Status Distribution")
+    st.plotly_chart(fig3, use_container_width=True, center=True)
 
-# making a smaller pie chart for the delay types.
-fig3.add_trace(go.Pie(
-    labels=delay_counts_arrival.index,
-    values=delay_counts_arrival.values,
-    hole=0.5,
-    domain={"x": [0.70, 1]},
-    legendgroup="Delay Types",
-    hovertemplate='<b>Cause of Delay:</b> %{label}<br>' + '<b>Value:</b> %{value}<br>' + '<b>Percent of Total:</b> %{percent}'))
-fig3.update_layout(
-    title_text="Flight Status and Delay Types Distribution for Arrivals",
-    annotations=[{"text": "Flight Status", "x": 0.19, "y": 0.5, "showarrow": False},{"text": "Delay Types", "x": 0.91, "y": 0.5, "showarrow": False}],
-    legend_title=dict(text="<b>Legend</b>"), width=900, height=600)
 
-st.plotly_chart(fig3, use_container_width=True)
+
+    st.subheader("Average Dalay caused by Each Delay Type")
+    st.write(f"The donut chart below shows the the percent of flights landing at {selected_airport_arr} airport on {selected_airline_arr} that experienced delays due to specific delay types. Hover over the chart to view the average delay time (in minutes) caused by each delay type.")
+    st.markdown("<b>Note:</b> One flight can be delay due to more than one type of delay and in a few cases, the delay reason was not reported so some discrepencies are viable.", unsafe_allow_html=True)
+    
+    fig4 = go.Figure()
+
+    # Filter the data to include only rows where ARR_DELAY is positive
+    pos_delay = filtered_data_arr[filtered_data_arr['ARR_DELAY'] > 0]
+
+    # Count delay types where ARR_DELAY is positive
+    delay_counts = pos_delay[['Carrier Delay', 'Weather Delay', 'NAS Delay', 'Security Delay', 'Late Aircraft Delay']].apply(lambda x: (x > 0).sum())
+
+    # Calculate average delay times for each delay category
+    avg_delay_times = pos_delay[['Carrier Delay', 'Weather Delay', 'NAS Delay', 'Security Delay', 'Late Aircraft Delay']].mean()
+
+    fig4.add_trace(go.Pie(
+        labels=delay_counts.index,
+        values=delay_counts.values,
+        textinfo='label+percent', 
+        hole=0.5,
+        hovertemplate='<b>Cause of Delay:</b> %{label}<br>' + '<b>Average Delay Time:</b> ' + avg_delay_times.round(2).astype(str) + ' minutes <br>' + '<b>Percent of Total:</b> %{percent}',        
+        marker=dict(colors=['#FF2B2B', '#7DEFA1', '#29B09D', '#FFD16A','#FF8700'])))
+    fig4.update_layout(
+        title_text="Average Delay Times by Delay Type")
+    st.plotly_chart(fig4, use_container_width=True, center=True) 
