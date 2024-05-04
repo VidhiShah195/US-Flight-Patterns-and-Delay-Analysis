@@ -85,13 +85,14 @@ flight_status_counts = {"Cancelled": filtered_data_dep['CANCELLED'].sum(),
 }
 
 # setting color based on the flight status.
-olors = {'Delayed': '#83C9FF', 'Cancelled': '#FF2B2B', 'On time': '#0068C9'}
+colors = {'Delayed': '#83C9FF', 'Cancelled': '#FF2B2B', 'On time': '#0068C9'}
 
 # setting it so that if no flights were cancelled, delayer or diverted, it printa that and if they were, then the two donut charts are printed.
 if all(count == 0 for count in flight_status_counts.values()):
     st.write("No flights were delayed, cancelled, or diverted.")
 else:
     st.write(f"The donut chart below shows the percent of flights departing from {selected_airport_dep} airport on {selected_airline_dep} that were on time, or experienced delays and/or cancellations.")
+
 
     # making the donut chart with flight overall status and adding a tool tip.
     fig3 = go.Figure()
