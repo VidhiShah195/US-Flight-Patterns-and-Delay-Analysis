@@ -55,7 +55,7 @@ flights_data['Day_Month_Year'] = flights_data['FL_DATE'].dt.strftime('%d-%b-%Y')
 daily_flights = flights_data.groupby('FL_DATE')['FL_NUMBER'].count().reset_index(name='TotalFlights')
 
 # Resampling data to get monthly total flights
-monthly_flights = flights_data.resample('M', on='FL_DATE')['FL_NUMBER'].count().reset_index(name='TotalFlights')
+monthly_flights = flights_data.resample('ME', on='FL_DATE')['FL_NUMBER'].count().reset_index(name='TotalFlights')
 
 # Plotting and adding tooltip
 fig1 = px.line(monthly_flights, x='FL_DATE', y='TotalFlights', markers=True, 
@@ -111,7 +111,7 @@ flights_by_day = selected_month_filtered.groupby('DayOfWeek')['FL_NUMBER'].count
 
 # plotting and adding a tool tip.
 fig2 = px.bar(flights_by_day, x='DayOfWeek', y='TotalFlights', 
-             title=f'Total Number of Flights by Day of the Week for {selected_month}',
+             title=f'Total Number of Flights by Day of the Week',
              labels={'DayOfWeek': 'Day Of Week', 'TotalFlights': 'Total Flights'})
 fig2.update_xaxes(categoryorder='array', categoryarray=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
 fig2.update_traces(hovertemplate='<b>Day of the Week:</b> %{label}<br><b>Total Flights:</b> %{value:,.0f}<extra></extra>', marker_color='#048092')
@@ -132,7 +132,7 @@ top_airports = top_airports['ORIGIN'].value_counts().nlargest(10).reset_index()
 top_airports.columns = ['Airport', 'Number of Flights']
 
 # plotting and adding a tool tip.
-fig3 = px.treemap(top_airports, path=['Airport'], values='Number of Flights', title=f'Top 10 Busiest Airports for {selected_month}',
+fig3 = px.treemap(top_airports, path=['Airport'], values='Number of Flights', title=f'Top 10 Busiest Airports',
                   color='Number of Flights', color_continuous_scale='bluyl')
 fig3.update_traces(textinfo='label+value', hovertemplate='<b>Airport:</b> %{label}<br><b>Number of Flights:</b> %{value}<extra></extra>')
 fig3.update_layout(margin=dict(t=50, l=25, r=25, b=25))
@@ -154,7 +154,7 @@ top_airlines_by_month.columns = ['Airlines', 'Number of Flights']
 
 # plotting and adding a tool tip.
 fig4 = px.bar(top_airlines_by_month, x='Airlines', y='Number of Flights', 
-              title=f'Top 10 Airlines by Number of Flights for {selected_month}')
+              title=f'Top 10 Airlines by Number of Flights')
 fig4.update_traces(hovertemplate='<b>Airline:</b> %{x}<br><b>Number of Flights:</b> %{y:,.0f}<extra></extra>', marker_color='#048092')
 st.plotly_chart(fig4)
 
@@ -178,13 +178,8 @@ ontime_count_selected_month = len(filtered_status[(filtered_status['ARR_DELAY'] 
 flight_status_counts_selected_month = pd.DataFrame({'Status': ['Delayed', 'Diverted', 'Cancelled', 'On-time'],'Count': [delayed_count_selected_month, diverted_count_selected_month, cancelled_count_selected_month,ontime_count_selected_month]})
 
 # plotting and adding a tool tip.
-fig5 = px.pie(flight_status_counts_selected_month, 
-                             values='Count', 
-                             names='Status', 
-                             hole=0.5, 
-                             title=f'Distribution of Flight Status')
-fig5.update_traces(textinfo='percent+label', 
-                                  hovertemplate='<b>Flight Status:</b> %{label}<br><b>Total Flights:</b> %{value}')
+fig5 = px.pie(flight_status_counts_selected_month, values='Count',names='Status', hole=0.5, title=f'Distribution of Flight Status')
+fig5.update_traces(textinfo='percent+label', hovertemplate='<b>Flight Status:</b> %{label}<br><b>Total Flights:</b> %{value}')
 st.plotly_chart(fig5)
 
 
