@@ -4,7 +4,7 @@ import plotly.express as px
 import base64
 
 st.set_page_config(
-    page_title="Home: Flight Delay and Cancelation Data Analysis",
+    page_title="Home",
     page_icon='✈️'
     )
 
@@ -18,7 +18,7 @@ st.markdown(
     f"""
     <div style="display: flex; justify-content: center; align-items: center;">
         <img src="data:image/gif;base64,{gif}" alt="gif" width="100">
-        <h1 style="margin-left: 10px;">Home</h1>
+        <h1 style="margin-left: 10px;">Overall US Flight Patterns From January to August 2023</h1>
     </div>
     """, 
     unsafe_allow_html=True
