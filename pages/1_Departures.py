@@ -27,7 +27,7 @@ st.markdown(
 # making a gray horizontal line under my title for a visual division.
 st.markdown("<hr style='border: 1px solid #f0f0f0;'>", unsafe_allow_html=True)
 
-st.write("On this page, we provide insights into departure patterns and flight performance at various airports. Explore the busiest departure times, track flight status distributions, and delve into the average delay times caused by different factors.")
+st.write("On this page, you will gain more insights into departure patterns and airline performance at various airports and airlines. Explore the busiest departure times, track flight status distributions, and delve into the average delay times caused by different delay types.")
 
 # added cache to ensure that the data doesn't have to be reloaded everytime the file runs.
 @st.cache_data
@@ -37,15 +37,17 @@ def load_data(csv):
 flights_data = load_data("data/flights_sample_3m.csv")
 
 
+st.header("Filter Flight Data by Airlines and Departure Airport")
 # CREATING THE SELECT BOXES ONE FOR AIRPORT AND THEN ANOTHER WHICH FILTERS BASED ON THAT 
 selected_airport_dep = st.selectbox('Select Departure Airport', sorted(flights_data['ORIGIN'].unique()))
 filtered_airlines = flights_data[flights_data['ORIGIN'] == selected_airport_dep]['AIRLINE'].unique()
 selected_airline_dep = st.selectbox('Select Airline', sorted(filtered_airlines))
+st.markdown("<b>*Note: </b> This selection will be used to filter all the charts below.",unsafe_allow_html=True)
 
 
 
 # BUSIEST DEPARTURE TIMES
-st.subheader(f'Overall Busiest Departure Times at {selected_airport_dep} with {selected_airline_dep}')
+st.subheader(f'Busiest Departure Times at {selected_airport_dep} with {selected_airline_dep}')
 
 # converting departure time to datetime forma and then extracting hour from departure time.
 flights_data['CRS_DEP_TIME'] = pd.to_datetime(flights_data['CRS_DEP_TIME'], format='%H%M', errors='coerce')
@@ -115,9 +117,7 @@ else:
                               'DELAY_DUE_LATE_AIRCRAFT': 'Late Aircraft Delay'}, inplace=True)
 
     st.subheader("Average Dalay caused by Each Delay Type")
-    st.write(f"The donut chart below shows the the percent of flights departing from {selected_airport_dep} airport on {selected_airline_dep} that experienced delays due to specific delay types. Hover over the chart to view the average delay time (in minutes) caused by each delay type.")
-    st.markdown("<b>Note:</b> A flight can be delayed due to more than one reason and in a few cases, the reason for delay was not reported so some discrepencies may occur.", unsafe_allow_html=True)
-    
+    st.write(f"The donut chart below shows the the percent of flights departing from {selected_airport_dep} airport on {selected_airline_dep} that experienced delays due to specific delay types. Hover over the chart to view the average delay time (in minutes) caused by each delay type.")  
 
     fig4 = go.Figure()
     

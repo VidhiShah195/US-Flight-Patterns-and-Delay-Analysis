@@ -28,7 +28,7 @@ st.markdown(
 # making a gray horizontal line under my title.
 st.markdown("<hr style='border: 1px solid #f0f0f0;'>", unsafe_allow_html=True)
 
-st.write("The goal of this Streamlit app is to help you navigate and understand the overall flight patterns, including those related to cancellations and delays from January to August of 2023. There are two additional pages which can be accessed through the side bar on the left.")
+st.write("Welcome to my Stremlit App! The goal of this app is to help you navigate and understand the overall flight patterns, including those related to departure and arrival cancellations and delays from January to August of 2023. There are two additional pages which can be accessed through the side bar on the left.")
 
 
 # added cache to ensure that the data doesn't have to be reloaded everytime the file runs.
@@ -45,37 +45,52 @@ flights_data['FL_DATE'] = pd.to_datetime(flights_data['FL_DATE'])
 
 
 # LINE CHART
-st.header("Overall Flight Trends")
-st.write("The line chart below shows the changes in the total number of flights from January to August of 2023.")
+st.header("Flight Trends")
+st.write("The line chart below shows the changes in the total number of flights from aggregated on month specifically from January to August of 2023.")
+st.write("Choose how you want to analyze the monthly trends by selecting either Overall Flight Trends (which shows the flight trends over the year aggregated by months) or Flight Trends by Specific Airlines (which allows you to choose multiple airlines and shows the changes in the total number of flights aggregated by month).")
 
-# adding a new column for day, month, and year.
-flights_data['Day_Month_Year'] = flights_data['FL_DATE'].dt.strftime('%d-%b-%Y')
+# extracting month from the 'FL_DATE' column.
+flights_data['Month'] = flights_data['FL_DATE'].dt.month
+# maping months to the numerical vlaues and then ordering it based on the months.
+month_names = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'August'}
+flights_data['Month'] = flights_data['Month'].map(month_names)
+flights_data['Month'] = pd.Categorical(flights_data['Month'], categories=month_names.values(), ordered=True)
 
-# grouping by day and count the number of flights.
-daily_flights = flights_data.groupby('FL_DATE')['FL_NUMBER'].count().reset_index(name='TotalFlights')
+# radio buttons to select overall or specific airlines.
+choice = st.radio("Select Method of Analysis:", ('Overall Flight Trends', 'Flight Trends by Specific Airline(s)'))
 
-# Resampling data to get monthly total flights
-monthly_flights = flights_data.resample('ME', on='FL_DATE')['FL_NUMBER'].count().reset_index(name='TotalFlights')
+# plotting based on selected option.
+if choice == 'Overall Flight Trends':
+    # resampling data to get monthly total flights.
+    monthly_flights = flights_data.groupby('Month')['FL_NUMBER'].count().reset_index(name='TotalFlights')
 
-# Plotting and adding tooltip
-fig1 = px.line(monthly_flights, x='FL_DATE', y='TotalFlights', markers=True, 
-               labels={'FL_DATE': 'Date', 'TotalFlights': 'Total Flights'},
-               title='Total Number of Flights by Month',
-               hover_name='FL_DATE', hover_data={'FL_DATE': False, 'TotalFlights': True})
-fig1.update_traces(hovertemplate='<b>Date:</b> %{x}<br><b>Total Flights:</b> %{y:,.0f}', line_color='#048092')
-st.plotly_chart(fig1)
+    # plotting and adding tooltip.
+    fig = px.line(monthly_flights, x='Month', y='TotalFlights', markers=True,
+                  labels={'Month': 'Month', 'TotalFlights': 'Total Flights'},
+                  title='Total Number of Flights by Month')
+    fig.update_traces(hovertemplate='<b>Month:</b> %{x}<br><b>Total Flights:</b> %{y:,.0f}')
+    st.plotly_chart(fig)
+else: 
+    # dropdown box which allows my user to select multiple airlines.
+    selected_airlines = st.multiselect('Select Airlines', flights_data['AIRLINE'].unique())
 
-# # plotting and adding tooltip.
-# fig1 = px.line(daily_flights, x='FL_DATE', y='TotalFlights', markers=True, 
-#               labels={'FL_DATE': 'Date', 'TotalFlights': 'Total Flights'},
-#               title='Total Number of Flights by Day',
-#               hover_name='FL_DATE', hover_data={'FL_DATE': False, 'TotalFlights': True})
-# fig1.update_traces(hovertemplate='<b>Date:</b> %{x}<br><b>Total Flights:</b> %{y:,.0f}', line_color='#048092')
-# st.plotly_chart(fig1)
+    # filtering based on selected airlines. 
+    filtered_data = flights_data[flights_data['AIRLINE'].isin(selected_airlines)]
+
+    # resampling data to get monthly total flights.
+    monthly_flights = filtered_data.groupby(['AIRLINE', 'Month'])['FL_NUMBER'].count().reset_index(name='TotalFlights')
+
+    # plotting and adding tooltip.
+    fig1 = px.line(monthly_flights, x='Month', y='TotalFlights', color='AIRLINE', markers=True,
+                labels={'Month': 'Month', 'TotalFlights': 'Total Flights'},
+                title='Total Number of Flights by Month For Selected Airlines',
+                hover_name='AIRLINE')
+    fig1.update_traces(hovertemplate='<b>Month:</b> %{x}<br><b>Total Flights:</b> %{y:,.0f}')
+    st.plotly_chart(fig1)
 
 
 
-# CREATING A FILTER THEN FILTER THE DATA FOR THE PLOTS BASED ON IT
+# CREATING A FILTER THEN FILTERING THE DATA FOR THE PLOTS BASED ON IT
 st.header("Filter Flight Data by Month(s)")
 selected_month = st.selectbox("Select a Month", ['All','January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'])
 st.markdown("<b>*Note: </b> This selection will be used to filter all the charts below.",unsafe_allow_html=True)
@@ -99,9 +114,9 @@ else:
 
 # DAY OF WEEK BAR CHART
 if selected_month == "All":
-    st.subheader("Weekly Overview")
+    st.subheader("Total Number of Flights by Day of the Week (All Months)")
 else:
-    st.subheader(f"Weekly Overview for {selected_month}")
+    st.subheader(f"Total Number of Flights by Day of the Week for {selected_month}")
 
 st.write("The bar chart below shows the total number of flights scheduled for each day of the week based on the selected month(s) of 2023.")
 
@@ -121,7 +136,7 @@ st.plotly_chart(fig2)
 
 # TREE MAP WITH TOP 10 BUSIEST AIRPORTS 
 if selected_month == "All":
-    st.subheader("Top 10 Busiest Airports")
+    st.subheader("Top 10 Busiest Airports Across All Months")
 else:
     st.subheader(f"Top 10 Busiest Airports for {selected_month}")
 
@@ -142,7 +157,7 @@ st.plotly_chart(fig3)
 
 # TOP 10 AIRLINES
 if selected_month == "All":
-    st.subheader("Top 10 Airlines")
+    st.subheader("Top 10 Airlines Across All Months")
 else:
     st.subheader(f"Top 10 Airlines for {selected_month}")
 
@@ -162,7 +177,7 @@ st.plotly_chart(fig4)
 
 # DONUT CHART
 if selected_month == "All":
-    st.subheader("Overall Distribution of Flight Status")
+    st.subheader("Distribution of Flight Status Across All Months")
 else:
     st.subheader(f"Distribution of Flight Status for {selected_month}")
 
@@ -187,7 +202,7 @@ st.plotly_chart(fig5)
 
 # BAR CHART FOR TOP 5 AIRPORTS DUE TO SELECTED DELAY TYPES
 if selected_month == "All":
-    st.subheader("Top 5 Airports by Delay Type")
+    st.subheader("Top 5 Airports by Delay Type Across All Months")
 else:
     st.subheader(f"Top 5 Airports by Delay Type for {selected_month}")
 

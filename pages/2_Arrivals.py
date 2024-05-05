@@ -27,6 +27,7 @@ st.markdown(
 # making a gray horizontal line under my title (used just for fun).
 st.markdown("<hr style='border: 1px solid #f0f0f0;'>", unsafe_allow_html=True)
 
+st.write("On this page, you will gain more insights into arrival patterns and airline performance at various airports. Explore the busiest arrival times, track flight status distributions, and delve into the average delay times caused by different delay types.")
 
 # added cache to ensure that the data doesn't have to be reloaded everytime the file runs.
 @st.cache_data
@@ -37,10 +38,12 @@ def load_data(csv):
 flights_data = load_data("data/flights_sample_3m.csv")
 
 
+st.header("Filter Flight Data by Airlines and Arrival Airport")
 # CREATING THE SELECT BOXES ONE FOR AIRPORT AND THEN ANOTHER WHICH FILTERS BASED ON THAT 
 selected_airport_arr = st.selectbox('Select Arrival Airport', sorted(flights_data['DEST'].unique()))
 filtered_airlines = flights_data[flights_data['DEST'] == selected_airport_arr]['AIRLINE'].unique()
 selected_airline_arr = st.selectbox('Select Airline', sorted(filtered_airlines))
+st.markdown("<b>*Note: </b> This selection will be used to filter all the charts below.",unsafe_allow_html=True)
 
 
 
@@ -68,7 +71,7 @@ for hour, count in arrival_counts.items():
 # plotting, formatting x-axis to display in AM/PM and adding a tool tip.
 fig1 = px.bar(x=hours, y=[arrival_counts_all_hours[hour] for hour in range(24)],
               labels={'x': 'Arrival Hour', 'y': 'Number of Flights'},
-              title=f'Busiest Arrival Times from {selected_airport_arr} with {selected_airline_arr}')
+              title=f'Busiest Arrival Times at {selected_airport_arr} with {selected_airline_arr}')
 fig1.update_xaxes(tickmode='array')
 fig1.update_traces(hovertemplate='<b>Arrival Hour:</b> %{x}<br><b>Number of Flights:</b> %{y}<extra></extra>', marker_color='#048092')
 st.plotly_chart(fig1)
@@ -116,7 +119,6 @@ else:
 
     st.subheader("Average Dalay caused by Each Delay Type")
     st.write(f"The donut chart below shows the the percent of flights landing at {selected_airport_arr} airport on {selected_airline_arr} that experienced delays due to specific delay types. Hover over the chart to view the average delay time (in minutes) caused by each delay type.")
-    st.markdown("<b>Note:</b> One flight can be delay due to more than one type of delay and in a few cases, the delay reason was not reported so some discrepencies may occur.", unsafe_allow_html=True)
     
     fig4 = go.Figure()
 
