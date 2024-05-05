@@ -10,7 +10,7 @@ This app has three pages:
 * **Arrivals:** Similar to the Departures page, the Arrivals page allows users to customize their analysis by selecting specific airlines and arrival airports. They can explore arrival patterns, peak arrival hours, and flight status distributions. Users can also analyze average delay times caused by different delay types to understand their impact on arrival schedules.
 
      
-## Data Sources
+## Data Source
 Airline Flight Delay and Cancellation dataset sourced from the US Department of Transportation's (DOT) Bureau of Transportation Statistics was used as it was available on [Kaggle](https://www.kaggle.com/datasets/patrickzel/flight-delay-and-cancellation-dataset-2019-2023/data). The original dataset includes data that spans from January 2019 to August 2023, however for this project, I decided to focus solely on the data from January 2023 to August 2023 since it's the most recent and available for use. 
 
 
