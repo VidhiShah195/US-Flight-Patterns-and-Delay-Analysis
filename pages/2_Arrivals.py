@@ -111,7 +111,6 @@ else:
 
 
 
-
     # renaming my columns so that I can use it later to make sure its easy for my users. 
     filtered_data_arr.rename(columns={'DELAY_DUE_CARRIER': 'Carrier Delay','DELAY_DUE_WEATHER': 'Weather Delay',
                               'DELAY_DUE_NAS': 'NAS Delay','DELAY_DUE_SECURITY': 'Security Delay',
