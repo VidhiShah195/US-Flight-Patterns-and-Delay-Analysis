@@ -14,7 +14,7 @@ with open("data/take-off.gif", "rb") as f:
     gif_data = f.read()
 gif = base64.b64encode(gif_data).decode()
 
-# creates a centrerd layout with the gif and tile being in the same line and there being 10 pixels of space between the gif and title.
+# creating a centrerd layout with the gif and tile being in the same line and there being 10 pixels of space between the gif and title.
 st.markdown(
     f"""
     <div style="display: flex; justify-content: center; align-items: center;">
