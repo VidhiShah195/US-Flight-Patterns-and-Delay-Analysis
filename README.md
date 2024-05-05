@@ -17,7 +17,11 @@ This app has three pages:
     * Delve into the average delay times caused by different delay types, including carrier delays, weather delays, NAS delays, security delays, and late aircraft delays. Understand the root causes of delays and their impact on departure schedules.
    
 * **Arrivals:**
-
+   * Customize your analysis by selecting specific airlines and arrival airports. Explore arrival patterns and airline performance tailored to your preferences.
+   * Uncover the busiest arrival times at your selected airport and airline. Explore hourly arrival counts and identify peak arrival hours.
+   * Gain insights into flight status distributions, including on-time arrivals, delays, and cancellations. Understand the impact of various flight statuses on arrival operations.
+   * Delve into the average delay times caused by different delay types, including carrier delays, weather delays, NAS delays, security delays, and late aircraft delays. Understand the root causes of delays and their impact on arrival schedules.
+     
 ## Data Sources
 Airline Flight Delay and Cancellation dataset sourced from the US Department of Transportation's (DOT) Bureau of Transportation Statistics was used as it was available on [Kaggle](https://www.kaggle.com/datasets/patrickzel/flight-delay-and-cancellation-dataset-2019-2023/data). The original dataset includes data that spans from January 2019 to August 2023, however for this project, I decided to focus solely on the data from January 2023 to August 2023 since it's the most recent and available for use. 
 
