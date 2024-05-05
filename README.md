@@ -15,3 +15,4 @@ Airline Flight Delay and Cancellation dataset sourced from the US Department of 
 
 
 ## Future Work
+For future works, the app could incorporate real-time data updates, predictive analytics for forecasting delays, enhanced user interactivity with personalized filtering options, and geographic visualization to depict flight routes and regional variations in performance. Not only that but expanding the analysis to include international flight data could provide valuable insights into global air travel trends and comparisons with domestic flights. 
