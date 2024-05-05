@@ -1,4 +1,4 @@
-# US Flight Data Analysis From January to August 2023
+# US Flight Patterns and Delay Analysis From January to August 2023
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://us-flight-delay-analysis-twjtaq58hmjcuh6aptdaxc.streamlit.app/)
 
 ## Introduction
