@@ -5,15 +5,13 @@
 In today's bustling world of air travel, understanding the intricacies of flight patterns can be as challenging as navigating the skies themselves. While data on flight schedules, cancellations, and delays is readily available, making sense of this wealth of information poses its own set of hurdles. That's where my Streamlit app comes in. My app is your go-to tool for unraveling the mysteries of air travel trends in the United States from January to August of 2023. Through a series of intuitive visualizations and analytical tools, this app aims to shed light on the overarching story hidden within the data.
 
 This app has three pages:
-* Home:
-    * Flight Trends: Explore the ebb and flow of flight activity with our interactive line charts. Choose between overall trends or focus on specific airlines to 
-      uncover insightful patterns.
-    * Filter Flight Data: Tailor your analysis by selecting specific months to examine flight data in greater detail. From day-of-week trends to the busiest 
-      airports and airlines, gain deeper insights into the nuances of air travel.
-    * Delay Analysis: Understand the impact of delays on air travel by exploring the top 5 airports affected by various delay types. From carrier delays to weather 
-      related disruptions, discover the airports facing the most challenges.
+* **Home:**
+    * Explore the flow of flight activity with our interactive line charts which you can choose between overall trends or focus on specific airlines to uncover insightful patterns.
+    * Tailor your analysis by selecting specific months to examine flight data in greater detail. From day-of-week trends to the busiest airports and airlines, gain deeper insights into the nuances of air travel.
+    * Understand the impact of delays on air travel by exploring the top 5 airports affected by various delay types. Discover the airports facing the most challenges, from carrier to security delays.
 
-* Departures:
+* **Departures:**
+     * 
 * Arrivals:
 
 ## Data Sources
