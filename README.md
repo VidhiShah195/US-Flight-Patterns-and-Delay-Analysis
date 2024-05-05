@@ -6,6 +6,13 @@ In today's bustling world of air travel, understanding the intricacies of flight
 
 This app has three pages:
 * Home:
+    * Flight Trends: Explore the ebb and flow of flight activity with our interactive line charts. Choose between overall trends or focus on specific airlines to 
+      uncover insightful patterns.
+    * Filter Flight Data: Tailor your analysis by selecting specific months to examine flight data in greater detail. From day-of-week trends to the busiest 
+      airports and airlines, gain deeper insights into the nuances of air travel.
+    * Delay Analysis: Understand the impact of delays on air travel by exploring the top 5 airports affected by various delay types. From carrier delays to weather 
+      related disruptions, discover the airports facing the most challenges.
+
 * Departures:
 * Arrivals:
 
