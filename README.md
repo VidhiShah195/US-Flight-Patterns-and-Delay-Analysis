@@ -7,7 +7,7 @@ In today's bustling world of air travel, understanding the intricacies of flight
 This app has three pages:
 * **Home:** This page offers an overview of flight activity trends. Users can explore interactive line charts to examine overall flight trends or focus on specific airlines. They can also analyze flight data by selecting specific months and explore the impact of delays on air travel, highlighting the top 5 airports affected by various delay types.
 * **Departures:** This page allows users to customize their analysis by selecting specific airlines and departure airports. They can explore departure patterns, peak departure hours, and flight status distributions (on-time, delays, cancellations). Additionally, users can delve into average delay times caused by different delay types to understand their impact on departure schedules.
-* **Arrivals:** Similar to the Departures page, the Arrivals page allows users to customize their analysis by selecting specific airlines and arrival airports. They can explore arrival patterns, peak arrival hours, and flight status distributions. Users can also analyze average delay times caused by different delay types to understand their impact on arrival schedules.
+* **Arrivals:** Similar to the Departures page, the Arrivals page allows users to customize their analysis by selecting specific airlines and arrival airports.
 
      
 ## Data Sources
