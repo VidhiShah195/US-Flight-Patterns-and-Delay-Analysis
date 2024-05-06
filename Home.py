@@ -30,7 +30,7 @@ st.markdown("<hr style='border: 1px solid #f0f0f0;'>", unsafe_allow_html=True)
 st.write("Welcome to my Stremlit App! The goal of this app is to help you navigate and understand the overall flight patterns, including those related to departure and arrival cancellations and delays from January to August of 2023. There are two additional pages which can be accessed through the side bar on the left.")
 
 
-# added cache to ensure that the data doesn't have to be reloaded everytime the file runs.
+# added cache to ensure that the data doesn't have to be reloaded every time the file runs.
 @st.cache_data
 def load_data(csv):
     return pd.read_csv(csv)
@@ -50,7 +50,7 @@ st.write("Choose how you want to analyze the monthly trends by selecting either 
 
 # extracting month from the 'FL_DATE' column.
 flights_data['Month'] = flights_data['FL_DATE'].dt.month
-# maping months to the numerical vlaues and then ordering it based on the months.
+# maping months to the numerical values and then ordering it based on the months.
 month_names = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'August'}
 flights_data['Month'] = flights_data['Month'].map(month_names)
 flights_data['Month'] = pd.Categorical(flights_data['Month'], categories=month_names.values(), ordered=True)
@@ -58,7 +58,7 @@ flights_data['Month'] = pd.Categorical(flights_data['Month'], categories=month_n
 # radio buttons to select overall or specific airlines.
 choice = st.radio("Select Method of Analysis:", ('Overall Flight Trends', 'Flight Trends by Specific Airline(s)'))
 
-# plotting based on selected option.
+# plotting based on the selected option.
 if choice == 'Overall Flight Trends':
     # resampling data to get monthly total flights.
     monthly_flights = flights_data.groupby('Month')['FL_NUMBER'].count().reset_index(name='TotalFlights')
@@ -94,7 +94,7 @@ st.header("Filter Flight Data by Month(s)")
 selected_month = st.selectbox("Select a Month", ['All','January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'])
 st.markdown("<b>*Note: </b> This selection will be used to filter all the charts below.",unsafe_allow_html=True)
 
-# filtering the data based on the selected month where if its all, then I set it back to the original data which includes all the months and if a specific month was selected, the data is filtered accordingly for each plot.
+# filtering the data based on the selected month where if its all, then I set it back to the original data which includes all the months, and if a specific month was selected, the data is filtered accordingly for each plot.
 if selected_month == 'All':
     selected_month_filtered = flights_data
     top_airports = flights_data
@@ -123,7 +123,7 @@ st.write("The bar chart below shows the total number of flights scheduled for ea
 selected_month_filtered['DayOfWeek'] = selected_month_filtered['FL_DATE'].dt.day_name()
 flights_by_day = selected_month_filtered.groupby('DayOfWeek')['FL_NUMBER'].count().reset_index(name='TotalFlights')
 
-# plotting and adding a tool tip.
+# plotting and adding a tooltip.
 fig2 = px.bar(flights_by_day, x='DayOfWeek', y='TotalFlights', 
              title=f'Total Number of Flights by Day of the Week',
              labels={'DayOfWeek': 'Day Of Week', 'TotalFlights': 'Total Flights'})
@@ -145,7 +145,7 @@ st.write("The tree map below shows the top 10 busiest airports based on the prev
 top_airports = top_airports['ORIGIN'].value_counts().nlargest(10).reset_index()
 top_airports.columns = ['Airport', 'Number of Flights']
 
-# plotting and adding a tool tip.
+# plotting and adding a tooltip.
 fig3 = px.treemap(top_airports, path=['Airport'], values='Number of Flights', title=f'Top 10 Busiest Airports',
                   color='Number of Flights', color_continuous_scale='bluyl')
 fig3.update_traces(textinfo='label+value', hovertemplate='<b>Airport:</b> %{label}<br><b>Number of Flights:</b> %{value}<extra></extra>')
@@ -182,16 +182,16 @@ else:
 
 st.write("The donut chart below shows the distribution in percentage of the flights that were on time, delayed, cancelled, or diverted for the previously selected month(s) of 2023.")
 
-# counting delayed, diverted, and cancelled flights for the selected month.
+# counting delayed, diverted and canceled flights for the selected month.
 delayed_count_selected_month = len(filtered_status[filtered_status['ARR_DELAY'] > 0])
 diverted_count_selected_month = len(filtered_status[filtered_status['DIVERTED'] == 1])
 cancelled_count_selected_month = len(filtered_status[filtered_status['CANCELLED'] == 1])
 ontime_count_selected_month = len(filtered_status[(filtered_status['ARR_DELAY'] <= 0) & (filtered_status['DIVERTED'] == 0) & (filtered_status['CANCELLED'] == 0)])
 
-# creating a dataframe for flight status counts.
+# creating a data frame for flight status counts.
 flight_status_counts_selected_month = pd.DataFrame({'Status': ['Delayed', 'Diverted', 'Cancelled', 'On-time'],'Count': [delayed_count_selected_month, diverted_count_selected_month, cancelled_count_selected_month,ontime_count_selected_month]})
 
-# plotting and adding a tool tip.
+# plotting and adding a tooltip.
 fig5 = px.pie(flight_status_counts_selected_month, values='Count',names='Status', hole=0.5, title=f'Distribution of Flight Status')
 fig5.update_traces(textinfo='percent+label', hovertemplate='<b>Flight Status:</b> %{label}<br><b>Total Flights:</b> %{value}')
 st.plotly_chart(fig5)
@@ -236,16 +236,16 @@ selected_reason = st.selectbox("Select Reason for Delay:", delay_reasons)
 if selected_reason != 'Late Aircraft Delay':  
     delayed_flights_selected_month = delayed_flights_selected_month[delayed_flights_selected_month[selected_reason] > 0]
 
-# counting delayed flights by airport.
+# counting delayed flights by the airport.
 delayed_by_airport_selected_month = delayed_flights_selected_month.groupby('DEST')['FL_NUMBER'].count().reset_index()
 delayed_by_airport_selected_month.columns = ['Airport', 'DelayedFlights']
 
-# sorting and selecting top 5 airports
+# sorting and selecting the top 5 airports
 delayed_by_airport_sorted_selected_month = delayed_by_airport_selected_month.sort_values(by='DelayedFlights', ascending=False)
 top_5_airports_selected_month = delayed_by_airport_sorted_selected_month.head(5)
 top_5_airports_sorted_selected_month = top_5_airports_selected_month.sort_values(by='DelayedFlights', ascending=True)
 
-# make the horizontal bar chart for the top 5 airports with a tool tip.
+# make the horizontal bar chart for the top 5 airports with a tooltip.
 fig6 = px.bar(top_5_airports_sorted_selected_month, y='Airport', x='DelayedFlights',
              title=f'Top 5 Airports with the Highest Number of Delayed Flights due to {selected_reason}',
              labels={'Airport': 'Airport Code', 'DelayedFlights': 'Number of Delayed Flights'},
