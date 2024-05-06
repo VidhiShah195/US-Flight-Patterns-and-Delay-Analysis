@@ -34,6 +34,7 @@ st.write("On this page, you will gain more insights into departure patterns and 
 def load_data(csv):
     return pd.read_csv(csv)
 
+# reading the csv.
 flights_data = load_data("data/flights_sample_3m.csv")
 
 
@@ -89,28 +90,28 @@ flight_status_counts = {"Cancelled": filtered_data_dep['CANCELLED'].sum(),
 # setting color based on the flight status.
 colors = {'Delayed': '#83C9FF', 'Cancelled': '#FF2B2B', 'On time': '#0068C9'}
 
-# setting it so that if no flights were cancelled, delayer or diverted, it prints that and if they were, then the two donut charts are printed.
-if all(count == 0 for count in flight_status_counts.values()):
-    st.write("No flights were delayed, cancelled, or diverted.")
+st.write(f"The donut chart below shows the percent of flights departing from {selected_airport_dep} airport on {selected_airline_dep} that were on time, or experienced delays and/or cancellations.")
+
+# making the donut chart with flight overall status and adding a tooltip.
+fig3 = go.Figure()
+fig3.add_trace(go.Pie(
+    labels=list(flight_status_counts.keys()),
+    values=list(flight_status_counts.values()),
+    textinfo='label+percent', 
+    hole=0.5,
+    hovertemplate='<b>Flight Status:</b> %{label}<br>' + '<b>Value:</b> %{value}<br>' + '<b>Percent of Total:</b> %{percent}',
+    marker=dict(colors= [colors[key] for key in flight_status_counts.keys()])))
+fig3.update_layout(
+    title_text="Flight Status Distribution")
+st.plotly_chart(fig3, use_container_width=True, center=True)
+
+
+
+# setting it so that if no flights were delayed, it prints my defined staement and if they were, then the second donut chart is printed.
+if flight_status_counts["Delayed"] == 0:
+    st.write("*No flights were delayed thus further analysis on delay distribution is not applicable.*")
+
 else:
-    st.write(f"The donut chart below shows the percent of flights departing from {selected_airport_dep} airport on {selected_airline_dep} that were on time, or experienced delays and/or cancellations.")
-
-
-    # making the donut chart with flight overall status and adding a tooltip.
-    fig3 = go.Figure()
-    fig3.add_trace(go.Pie(
-        labels=list(flight_status_counts.keys()),
-        values=list(flight_status_counts.values()),
-        textinfo='label+percent', 
-        hole=0.5,
-        hovertemplate='<b>Flight Status:</b> %{label}<br>' + '<b>Value:</b> %{value}<br>' + '<b>Percent of Total:</b> %{percent}',
-        marker=dict(colors= [colors[key] for key in flight_status_counts.keys()])))
-    fig3.update_layout(
-        title_text="Flight Status Distribution")
-    st.plotly_chart(fig3, use_container_width=True, center=True)
-
-
-
     # renaming my columns so that I can use it later to make sure its easy for my users.
     filtered_data_dep.rename(columns={'DELAY_DUE_CARRIER': 'Carrier Delay','DELAY_DUE_WEATHER': 'Weather Delay',
                               'DELAY_DUE_NAS': 'NAS Delay','DELAY_DUE_SECURITY': 'Security Delay',
