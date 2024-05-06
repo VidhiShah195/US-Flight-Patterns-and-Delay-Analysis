@@ -61,14 +61,14 @@ departure_counts = filtered_data_dep['DepHour'].value_counts().sort_index()
 
 # setting the hours and initializing departure counts for all hours.
 hours = [(f'{h % 12 if h % 12 != 0 else 12} {"AM" if h < 12 else "PM"}') for h in range(24)]
-departure_counts_all_hours = {hour: 0 for hour in range(24)}
+count_all_hours = {hour: 0 for hour in range(24)}
 
 # counting occurrences of each departure hours.
 for hour, count in departure_counts.items():
-    departure_counts_all_hours[hour] = count
+    count_all_hours[hour] = count
 
 # plotting, formatting x-axis to display in AM/PM and adding a tool tip.
-fig1 = px.bar(x=hours, y=[departure_counts_all_hours[hour] for hour in range(24)],
+fig1 = px.bar(x=hours, y=[count_all_hours[hour] for hour in range(24)],
               labels={'x': 'Departure Hour', 'y': 'Number of Flights'},
               title=f'Busiest Departure Times from {selected_airport_dep} with {selected_airline_dep}')
 fig1.update_xaxes(tickmode='array')
@@ -89,14 +89,14 @@ flight_status_counts = {"Cancelled": filtered_data_dep['CANCELLED'].sum(),
 # setting color based on the flight status.
 colors = {'Delayed': '#83C9FF', 'Cancelled': '#FF2B2B', 'On time': '#0068C9'}
 
-# setting it so that if no flights were cancelled, delayer or diverted, it printa that and if they were, then the two donut charts are printed.
+# setting it so that if no flights were cancelled, delayer or diverted, it prints that and if they were, then the two donut charts are printed.
 if all(count == 0 for count in flight_status_counts.values()):
     st.write("No flights were delayed, cancelled, or diverted.")
 else:
     st.write(f"The donut chart below shows the percent of flights departing from {selected_airport_dep} airport on {selected_airline_dep} that were on time, or experienced delays and/or cancellations.")
 
 
-    # making the donut chart with flight overall status and adding a tool tip.
+    # making the donut chart with flight overall status and adding a tooltip.
     fig3 = go.Figure()
     fig3.add_trace(go.Pie(
         labels=list(flight_status_counts.keys()),

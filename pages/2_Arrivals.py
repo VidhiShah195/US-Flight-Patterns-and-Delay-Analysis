@@ -62,14 +62,14 @@ arrival_counts = filtered_data_arr['ArrHour'].value_counts().sort_index()
 
 # setting the hours and initializing departure counts for all hours.
 hours = [(f'{h % 12 if h % 12 != 0 else 12} {"AM" if h < 12 else "PM"}') for h in range(24)]
-arrival_counts_all_hours = {hour: 0 for hour in range(24)}
+count_all_hours = {hour: 0 for hour in range(24)}
 
 # counting occurrences of each arrival hour.
 for hour, count in arrival_counts.items():
-    arrival_counts_all_hours[hour] = count
+    count_all_hours[hour] = count
 
 # plotting, formatting x-axis to display in AM/PM and adding a tool tip.
-fig1 = px.bar(x=hours, y=[arrival_counts_all_hours[hour] for hour in range(24)],
+fig1 = px.bar(x=hours, y=[count_all_hours[hour] for hour in range(24)],
               labels={'x': 'Arrival Hour', 'y': 'Number of Flights'},
               title=f'Busiest Arrival Times at {selected_airport_arr} with {selected_airline_arr}')
 fig1.update_xaxes(tickmode='array')
@@ -90,13 +90,13 @@ flight_status_counts = {"Cancelled": filtered_data_arr['CANCELLED'].sum(),
 # setting color based on the flight status.
 colors = {'Delayed': '#83C9FF', 'Cancelled': '#FF2B2B', 'On time': '#0068C9'}
 
-# setting it so that if no flights were cancelled, delayer or diverted, it printa that and if they were, then the two donut charts are printed.
+# setting it so that if no flights were cancelled, delayer or diverted, it prints that and if they were, then the two donut charts are printed.
 if all(count == 0 for count in flight_status_counts.values()):
     st.write("No flights were delayed, cancelled, or diverted.")
 else:
     st.write(f"The donut chart below shows the the percent of flights landing at {selected_airport_arr} airport on {selected_airline_arr} that were on time, or experienced delays and/or cancellations.")
     
-    # making the donut chart with flight overall status and adding a tool tip.
+    # making the donut chart with flight overall status and adding a tooltip.
     fig3 = go.Figure()
     fig3.add_trace(go.Pie(
         labels=list(flight_status_counts.keys()),

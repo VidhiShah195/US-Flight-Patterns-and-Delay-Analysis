@@ -51,9 +51,9 @@ st.write("Choose how you want to analyze the monthly trends by selecting either 
 # extracting month from the 'FL_DATE' column.
 flights_data['Month'] = flights_data['FL_DATE'].dt.month
 # maping months to the numerical values and then ordering it based on the months.
-month_names = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'August'}
-flights_data['Month'] = flights_data['Month'].map(month_names)
-flights_data['Month'] = pd.Categorical(flights_data['Month'], categories=month_names.values(), ordered=True)
+months = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'August'}
+flights_data['Month'] = flights_data['Month'].map(months)
+flights_data['Month'] = pd.Categorical(flights_data['Month'], categories=months.values(), ordered=True)
 
 # radio buttons to select overall or specific airlines.
 choice = st.radio("Select Method of Analysis:", ('Overall Flight Trends', 'Flight Trends by Specific Airline(s)'))
@@ -163,11 +163,11 @@ else:
 st.write("The bar chart below shows the top 10 airlines based on the number of flights for the the previously selected month(s) of 2023.")
 
 # getting the top 10 airlines for the selected month.
-top_airlines_by_month = top_airlines.groupby('AIRLINE')['FL_NUMBER'].count().nlargest(10).reset_index()
-top_airlines_by_month.columns = ['Airlines', 'Number of Flights']
+top_airlines = top_airlines.groupby('AIRLINE')['FL_NUMBER'].count().nlargest(10).reset_index()
+top_airlines.columns = ['Airlines', 'Number of Flights']
 
 # plotting and adding a tool tip.
-fig4 = px.bar(top_airlines_by_month, x='Airlines', y='Number of Flights', 
+fig4 = px.bar(top_airlines, x='Airlines', y='Number of Flights', 
               title=f'Top 10 Airlines by Number of Flights')
 fig4.update_traces(hovertemplate='<b>Airline:</b> %{x}<br><b>Number of Flights:</b> %{y:,.0f}<extra></extra>', marker_color='#048092')
 st.plotly_chart(fig4)
@@ -183,16 +183,16 @@ else:
 st.write("The donut chart below shows the distribution in percentage of the flights that were on time, delayed, cancelled, or diverted for the previously selected month(s) of 2023.")
 
 # counting delayed, diverted and canceled flights for the selected month.
-delayed_count_selected_month = len(filtered_status[filtered_status['ARR_DELAY'] > 0])
-diverted_count_selected_month = len(filtered_status[filtered_status['DIVERTED'] == 1])
-cancelled_count_selected_month = len(filtered_status[filtered_status['CANCELLED'] == 1])
-ontime_count_selected_month = len(filtered_status[(filtered_status['ARR_DELAY'] <= 0) & (filtered_status['DIVERTED'] == 0) & (filtered_status['CANCELLED'] == 0)])
+delayed = len(filtered_status[filtered_status['ARR_DELAY'] > 0])
+diverted = len(filtered_status[filtered_status['DIVERTED'] == 1])
+cancelled = len(filtered_status[filtered_status['CANCELLED'] == 1])
+ontime = len(filtered_status[(filtered_status['ARR_DELAY'] <= 0) & (filtered_status['DIVERTED'] == 0) & (filtered_status['CANCELLED'] == 0)])
 
 # creating a data frame for flight status counts.
-flight_status_counts_selected_month = pd.DataFrame({'Status': ['Delayed', 'Diverted', 'Cancelled', 'On-time'],'Count': [delayed_count_selected_month, diverted_count_selected_month, cancelled_count_selected_month,ontime_count_selected_month]})
+flight_status_counts = pd.DataFrame({'Status': ['Delayed', 'Diverted', 'Cancelled', 'On-time'],'Count': [delayed, diverted, cancelled, ontime]})
 
 # plotting and adding a tooltip.
-fig5 = px.pie(flight_status_counts_selected_month, values='Count',names='Status', hole=0.5, title=f'Distribution of Flight Status')
+fig5 = px.pie(flight_status_counts, values='Count',names='Status', hole=0.5, title=f'Distribution of Flight Status')
 fig5.update_traces(textinfo='percent+label', hovertemplate='<b>Flight Status:</b> %{label}<br><b>Total Flights:</b> %{value}')
 st.plotly_chart(fig5)
 
@@ -237,11 +237,11 @@ if selected_reason != 'Late Aircraft Delay':
     delayed_flights_selected_month = delayed_flights_selected_month[delayed_flights_selected_month[selected_reason] > 0]
 
 # counting delayed flights by the airport.
-delayed_by_airport_selected_month = delayed_flights_selected_month.groupby('DEST')['FL_NUMBER'].count().reset_index()
-delayed_by_airport_selected_month.columns = ['Airport', 'DelayedFlights']
+delayed_by_airport_month = delayed_flights_selected_month.groupby('DEST')['FL_NUMBER'].count().reset_index()
+delayed_by_airport_month.columns = ['Airport', 'DelayedFlights']
 
 # sorting and selecting the top 5 airports
-delayed_by_airport_sorted_selected_month = delayed_by_airport_selected_month.sort_values(by='DelayedFlights', ascending=False)
+delayed_by_airport_sorted_selected_month = delayed_by_airport_month.sort_values(by='DelayedFlights', ascending=False)
 top_5_airports_selected_month = delayed_by_airport_sorted_selected_month.head(5)
 top_5_airports_sorted_selected_month = top_5_airports_selected_month.sort_values(by='DelayedFlights', ascending=True)
 
