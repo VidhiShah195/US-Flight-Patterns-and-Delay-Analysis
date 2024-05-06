@@ -1,5 +1,5 @@
 # US Flight Patterns and Delay Analysis From January to August 2023
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://us-flight-delay-analysis-twjtaq58hmjcuh6aptdaxc.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://us-flight-patterns-and-delay-analysis-ptzkkfcqbyimnljkpxg2fx.streamlit.app/)
 
 ## Introduction
 In today's bustling world of air travel, understanding the intricacies of flight patterns can be as challenging as navigating the skies themselves. While data on flight schedules, cancellations, and delays is readily available, making sense of this wealth of information poses its own set of hurdles. That's where my Streamlit app comes in as it is designed to help you unravel the mysteries of air travel trends in the United States from January to August of 2023. It aims to shed light on the overarching information hidden within the data through a series of intuitive visualizations.
